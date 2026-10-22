@@ -1,0 +1,2 @@
+C:\Users\ogu\Documents\Codex\2026-10-22\make\outputs\LiquidSpotify\app\LiquidSpotify.pdb
+C:\Users\ogu\Documents\Codex\2026-10-22\make\outputs\LiquidSpotify\app\LiquidSpotify.exe

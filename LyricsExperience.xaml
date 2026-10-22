@@ -1,0 +1,155 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<UserControl x:Class="LiquidSpotify.LyricsExperience" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" FontFamily="{StaticResource PlayerFont}" Foreground="#FBFBFF" UseLayoutRounding="True">
+  <Grid Background="#171719" x:Name="Scene" MouseLeftButtonDown="MoveWindow">
+    <Image x:Name="AmbientArt" Stretch="UniformToFill" Opacity="0.2" IsHitTestVisible="False">
+      <Image.Effect>
+        <BlurEffect Radius="85" RenderingBias="Performance" />
+      </Image.Effect>
+    </Image>
+    <Border Background="#B80D0D0F" IsHitTestVisible="False" />
+    <Grid x:Name="SceneLayout" Margin="24,16,24,18">
+      <Grid.RowDefinitions>
+        <RowDefinition Height="36" />
+        <RowDefinition x:Name="MiniInfoRow" Height="70" />
+        <RowDefinition Height="*" />
+        <RowDefinition x:Name="MiniTransportRow" Height="90" />
+      </Grid.RowDefinitions>
+      <Grid Grid.Row="0" x:Name="SceneHeader" Background="Transparent">
+        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+          <Button Style="{StaticResource IconButton}" Click="BackToPlayer" ToolTip="Back to mini player (Ctrl+L)" AutomationProperties.Name="Back to mini player">
+            <Path Style="{StaticResource LineIcon}" Data="M 15,5 L 8,12 L 15,19" Width="10" Height="15" />
+          </Button>
+          <TextBlock Text="Lyrics" FontSize="12" FontWeight="Medium" Foreground="#B7B7BD" VerticalAlignment="Center" Margin="9,0,0,0" />
+        </StackPanel>
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+          <Button xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" x:Name="LyricsMore" Style="{StaticResource IconButton}" Click="OpenLyricsMenu" ToolTip="Lyrics options" AutomationProperties.Name="Lyrics options">
+            <Button.ContextMenu>
+              <ContextMenu>
+                <MenuItem Header="Follow lyrics" Click="ResumeFollowing" />
+                <Separator />
+                <MenuItem Header="Show lyrics earlier" Click="Earlier" />
+                <MenuItem Header="Show lyrics later" Click="Later" />
+                <MenuItem Header="Reset timing" Click="ResetOffset" />
+                <Separator />
+                <MenuItem Header="Open lyrics file…" Click="LoadLyricsFile" />
+                <MenuItem Header="Reload lyrics" Click="RetryLyrics" />
+              </ContextMenu>
+            </Button.ContextMenu>
+            <TextBlock Text="•••" FontSize="13" FontWeight="Bold" Foreground="#D6D6DB" />
+          </Button>
+          <Button x:Name="ScreenButton" Style="{StaticResource IconButton}" Click="SwitchFullscreen" ToolTip="Fullscreen (F11)" AutomationProperties.Name="Toggle fullscreen">
+            <Path Style="{StaticResource LineIcon}" Width="14" Height="14" Data="M 3,9 L 3,3 L 9,3 M 15,3 L 21,3 L 21,9 M 21,15 L 21,21 L 15,21 M 9,21 L 3,21 L 3,15" />
+          </Button>
+          <Button Style="{StaticResource IconButton}" Click="ClosePlayer" ToolTip="Close player" AutomationProperties.Name="Close player">
+            <Path Style="{StaticResource LineIcon}" Width="11" Height="11" Data="M 6,6 L 18,18 M 6,18 L 18,6" />
+          </Button>
+        </StackPanel>
+      </Grid>
+      <Grid Grid.Row="1" x:Name="MiniInfo" Margin="0,10,0,6" Background="Transparent">
+        <Grid.ColumnDefinitions>
+          <ColumnDefinition Width="58" />
+          <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+        <Border Width="46" Height="46" CornerRadius="9" HorizontalAlignment="Left">
+          <Border.Background>
+            <ImageBrush x:Name="MiniCover" Stretch="UniformToFill" />
+          </Border.Background>
+        </Border>
+        <StackPanel Grid.Column="1" VerticalAlignment="Center">
+          <TextBlock x:Name="MiniTitle" FontWeight="Bold" FontSize="16" TextTrimming="CharacterEllipsis" />
+          <TextBlock x:Name="MiniArtist" Foreground="#BFFFFFFF" FontWeight="Medium" FontSize="11" Margin="0,5,0,0" TextTrimming="CharacterEllipsis" />
+        </StackPanel>
+      </Grid>
+      <Grid Grid.Row="2" x:Name="Body" Margin="0,12,0,0">
+        <Grid.ColumnDefinitions>
+          <ColumnDefinition x:Name="PlayerColumn" Width="0" />
+          <ColumnDefinition x:Name="BodyGap" Width="0" />
+          <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+        <StackPanel x:Name="FullPlayer" Visibility="Collapsed" Width="360" VerticalAlignment="Center" HorizontalAlignment="Center">
+          <Border x:Name="AlbumCard" Width="360" Height="360" CornerRadius="18">
+            <Border.Effect>
+              <DropShadowEffect BlurRadius="40" ShadowDepth="16" Opacity="0.3" />
+            </Border.Effect>
+            <Border.Background>
+              <ImageBrush x:Name="LargeCover" Stretch="UniformToFill" />
+            </Border.Background>
+          </Border>
+          <TextBlock x:Name="FullTitle" FontSize="25" FontWeight="Bold" TextWrapping="Wrap" Margin="1,26,0,0" MaxHeight="76" />
+          <TextBlock x:Name="FullArtist" FontSize="17" FontWeight="Medium" Foreground="#B9FFFFFF" Margin="1,7,0,0" TextTrimming="CharacterEllipsis" />
+          <Slider x:Name="FullSeek" Margin="0,24,0,0" Minimum="0" Maximum="1" PreviewMouseLeftButtonDown="SeekStarted" PreviewMouseLeftButtonUp="SeekEnded" PreviewKeyDown="SeekKey" AutomationProperties.Name="Fullscreen playback position" />
+          <Grid>
+            <TextBlock x:Name="FullElapsed" Text="0:00" FontSize="10" Foreground="#8CFFFFFF" />
+            <TextBlock x:Name="FullDuration" Text="–:––" FontSize="10" Foreground="#8CFFFFFF" HorizontalAlignment="Right" />
+          </Grid>
+          <Grid Margin="0,22,0,0">
+            <Grid.ColumnDefinitions>
+              <ColumnDefinition />
+              <ColumnDefinition Width="58" />
+              <ColumnDefinition Width="72" />
+              <ColumnDefinition Width="58" />
+              <ColumnDefinition />
+            </Grid.ColumnDefinitions>
+            <Button Grid.Column="1" Style="{StaticResource IconButton}" Width="46" Height="46" Click="Previous" AutomationProperties.Name="Previous track">
+              <Path Fill="White" Width="23" Height="22" Stretch="Uniform" Data="M 4,4 L 7,4 L 7,20 L 4,20 Z M 20,4 L 9,12 L 20,20 Z" />
+            </Button>
+            <Button x:Name="FullPlay" Grid.Column="2" Style="{StaticResource IconButton}" Width="56" Height="56" Click="PlayPause" AutomationProperties.Name="Play or pause">
+              <Path x:Name="FullPlayGlyph" Fill="White" Width="25" Height="28" Stretch="Uniform" Data="{StaticResource PlayGeometry}" />
+            </Button>
+            <Button Grid.Column="3" Style="{StaticResource IconButton}" Width="46" Height="46" Click="Next" AutomationProperties.Name="Next track">
+              <Path Fill="White" Width="23" Height="22" Stretch="Uniform" Data="M 17,4 L 20,4 L 20,20 L 17,20 Z M 4,4 L 15,12 L 4,20 Z" />
+            </Button>
+          </Grid>
+        </StackPanel>
+        <Grid Grid.Column="2" x:Name="LyricsPane">
+          <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="28" />
+          </Grid.RowDefinitions>
+          <ScrollViewer x:Name="LyricsScroll" VerticalScrollBarVisibility="Hidden" HorizontalScrollBarVisibility="Disabled" CanContentScroll="False" PanningMode="VerticalOnly" PreviewMouseWheel="ManualScroll">
+            <ScrollViewer.OpacityMask>
+              <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                <GradientStop Color="Transparent" />
+                <GradientStop Color="Black" Offset="0.12" />
+                <GradientStop Color="Black" Offset="0.84" />
+                <GradientStop Color="Transparent" Offset="1" />
+              </LinearGradientBrush>
+            </ScrollViewer.OpacityMask>
+            <StackPanel x:Name="LyricsLines" Margin="0,90,0,160" />
+          </ScrollViewer>
+          <StackPanel x:Name="EmptyState" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="6,0,10,10">
+            <TextBlock x:Name="EmptyTitle" Text="Loading lyrics…" FontSize="23" FontWeight="Bold" TextWrapping="Wrap" Margin="0,16,0,10" />
+            <TextBlock x:Name="EmptyDescription" Text="Matching lyrics to your music…" Foreground="#AFFFFFFF" FontSize="13" TextWrapping="Wrap" MaxWidth="360" />
+          </StackPanel>
+          <Grid Grid.Row="1">
+            <TextBlock x:Name="SourceLabel" FontSize="9" Foreground="#66FFFFFF" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" Text="LRCLIB" />
+            <Button x:Name="FollowButton" Content="Follow lyrics" FontFamily="{StaticResource PlayerFont}" FontSize="11" Style="{StaticResource IconButton}" Width="96" Height="27" Background="Transparent" BorderBrush="Transparent" Click="ResumeFollowing" ToolTip="Resume scrolling with the music" HorizontalAlignment="Right" Visibility="Collapsed" />
+            <TextBlock x:Name="OffsetLabel" Text="0.0s" FontSize="10" Foreground="#8FFFFFFF" VerticalAlignment="Center" Width="39" TextAlignment="Center" Visibility="Collapsed" />
+          </Grid>
+        </Grid>
+      </Grid>
+      <Grid Grid.Row="3" x:Name="MiniTransport" Margin="0,10,0,0">
+        <Grid.RowDefinitions>
+          <RowDefinition Height="26" />
+          <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <Grid>
+          <Slider x:Name="MiniSeek" Minimum="0" Maximum="1" VerticalAlignment="Top" PreviewMouseLeftButtonDown="SeekStarted" PreviewMouseLeftButtonUp="SeekEnded" PreviewKeyDown="SeekKey" AutomationProperties.Name="Lyrics playback position" />
+          <TextBlock x:Name="MiniElapsed" Text="0:00" FontSize="9" Foreground="#8CFFFFFF" VerticalAlignment="Bottom" />
+          <TextBlock x:Name="MiniDuration" Text="–:––" FontSize="9" Foreground="#8CFFFFFF" VerticalAlignment="Bottom" HorizontalAlignment="Right" />
+        </Grid>
+        <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
+          <Button Style="{StaticResource IconButton}" Width="48" Height="40" Click="Previous" AutomationProperties.Name="Previous track">
+            <Path Fill="White" Width="18" Height="18" Stretch="Uniform" Data="M 4,4 L 7,4 L 7,20 L 4,20 Z M 20,4 L 9,12 L 20,20 Z" />
+          </Button>
+          <Button x:Name="MiniPlay" Style="{StaticResource IconButton}" Width="44" Height="44" Click="PlayPause" Background="#15FFFFFF" Margin="8,0,8,0" AutomationProperties.Name="Play or pause">
+            <Path x:Name="MiniPlayGlyph" Fill="White" Width="17" Height="19" Stretch="Uniform" Data="{StaticResource PlayGeometry}" />
+          </Button>
+          <Button Style="{StaticResource IconButton}" Width="48" Height="40" Click="Next" AutomationProperties.Name="Next track">
+            <Path Fill="White" Width="18" Height="18" Stretch="Uniform" Data="M 17,4 L 20,4 L 20,20 L 17,20 Z M 4,4 L 15,12 L 4,20 Z" />
+          </Button>
+        </StackPanel>
+      </Grid>
+    </Grid>
+  </Grid>
+</UserControl>
